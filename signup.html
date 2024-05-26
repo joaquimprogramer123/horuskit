@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, minimal-ui">
+<title>MobioKit - Premium Mobile Template</title>
+<link rel="stylesheet" href="vendor/swiper/swiper.min.css">
+<link rel="stylesheet" href="css/style.css">
+<link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,700,900" rel="stylesheet"> 
+</head>
+<body>
+
+<!-- Intancia para conectar com o firebase-->
+
+	<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyAdVrAXk70WCDvw6nveao9SwCAAAbIpsts",
+    authDomain: "horus-87f81.firebaseapp.com",
+    projectId: "horus-87f81",
+    storageBucket: "horus-87f81.appspot.com",
+    messagingSenderId: "692067844473",
+    appId: "1:692067844473:web:1a18ba28a30c0f48332fa8",
+    measurementId: "G-FR49ZZTE4E"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+</script>
+
+<!-- Instancia para importar as bibliotecas  so firebase namespace-->
+
+<script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore-compat.js"></script>
+
+<!-- Intancia para iniciar o firestore-->
+
+<script type="module">
+
+// TODO: Replace the following with your app's Firebase project configuration
+// See: https://support.google.com/firebase/answer/7015592
+const firebaseConfig = {
+  apiKey: "AIzaSyAdVrAXk70WCDvw6nveao9SwCAAAbIpsts",
+  authDomain: "horus-87f81.firebaseapp.com",
+  projectId: "horus-87f81",
+  storageBucket: "horus-87f81.appspot.com",
+  messagingSenderId: "692067844473",
+  appId: "1:692067844473:web:1a18ba28a30c0f48332fa8",
+  measurementId: "G-FR49ZZTE4E"
+};
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+
+
+// Initialize Cloud Firestore and get a reference to the service
+const db = firebase.firestore();
+
+document.addEventListener('DOMContentLoaded', function() {
+  // Referência ao formulário
+  const form = document.getElementById('LoginForm');
+
+  // Referência ao botão de envio
+  const submitButton = document.getElementById('submit');
+
+  // Verifica se o formulário e o botão de envio foram encontrados no DOM
+  if (form && submitButton) {
+    // Manipulador de evento para o clique do botão de envio
+    submitButton.addEventListener('click', function(event) {
+      event.preventDefault(); // Evita o envio padrão do formulário
+
+      // Obter os valores dos campos do formulário
+      const nome = form.elements['Username'].value;
+      const email = form.elements['email'].value;
+      const cpf = form.elements['password'].value; // Alterado 'password' para 'cpf'
+      const telefone = form.elements['telefone'].value;
+      const whatsapp = form.elements['whatsapp'].value;
+
+      // Validação de dados (implemente a sua lógica de validação aqui)
+
+      // Salvar os dados no Firestore com o CPF como ID do documento
+      db.collection('usuarios').doc(cpf).set({
+        nome: nome,
+        email: email,
+        cpf: cpf,
+        telefone: telefone,
+        whatsapp: whatsapp
+      })
+      .then(() => {
+        console.log("Documento salvo com sucesso!");
+
+        // Redireciona para foto.html e passa o CPF como parâmetro de consulta na URL
+        window.location.href = 'camera.html?cpf=' + encodeURIComponent(cpf);
+      })
+      .catch((error) => {
+        console.error("Erro ao salvar documento: ", error);
+      });
+
+    });
+  }
+});
+
+</script>
+	
+<div class="page page--login" data-page="login">
+	
+	<!-- HEADER -->
+	<header class="header header--fixed">	
+		<div class="header__inner">	
+			<div class="header__icon"><a href="index.html"><img src="assets/images/icons/white/arrow-back.svg" alt="" title=""/></a></div>	
+                </div>
+	</header>
+	
+        <div class="login">
+		<div class="login__content">	
+			<h2 class="login__title">Faça o seu registro</h2>
+			<p class="login__text">Join us for free!</p>
+				<div class="login-form">
+					<form id="LoginForm" method="post" action="foto.html">
+						<div class="login-form__row">
+							<label class="login-form__label">Nome Completo</label>
+							<input type="text" name="Username" value="" class="login-form__input required" />
+						</div>
+						<div class="login-form__row">
+							<label class="login-form__label">Email</label>
+							<input type="text" name="email" value="" class="login-form__input required email" />
+						</div>
+						<div class="login-form__row">
+							<label class="login-form__label">CPF</label>
+							<input type="number" name="password" value="" class="login-form__input required" />
+						</div>
+                        <div class="login-form__row">
+                            <label class="login-form__label">Telefone</label>
+                            <input type="number" name="telefone" value="" class="login-form__input required" />
+                        </div>
+                         <div class="login-form__row">
+                            <label class="login-form__label">Whatsapp</label>
+                            <input type="number" name="whatsapp" value="" class="login-form__input required" />
+                        </div>
+						<div class="login-form__row">
+							<input type="submit" name="submit" class="login-form__submit button button--main button--full" id="submit" value="SIGN UP" />
+						</div>
+					</form>	
+				</div>
+		</div>
+        </div>
+			  
+</div>
+<!-- PAGE END -->
+   
+
+
+
+
+
+	
+</body>
+</html>
