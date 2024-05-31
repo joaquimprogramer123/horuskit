@@ -1,79 +1,92 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Camera with Face Recognition</title>
-    <script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.min.js"></script>
+    <title>Vídeo WebRTC Autoplay</title>
+    <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+    <script src="face-api.js-master/dist/face-api.js"></script>
 </head>
-<style type="text/css">
-    body {
-        margin: 0;
-        overflow: hidden;
-    }
-    #video {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        object-fit: cover; /* Cobertura total preservando proporção */
-    }
-    canvas {
-        position: absolute;
-        top: 0;
-        left: 0;
-    }
-</style>
 <body>
-    <video id="video" autoplay playsinline></video>
-    <canvas id="canvas"></canvas>
-    <script type="text/javascript">
-        // Função para iniciar a câmera
-        async function startCamera() {
-            const constraints = {
-                video: {
-                    facingMode: 'user' // Use 'environment' for back camera
-                }
-            };
+    <h1>Vídeo WebRTC</h1>
+
+    <div id="videoStream">
+        <video id="myVideo" autoplay playsinline></video>
+    </div>
+
+    <!-- Carregando os modelos -->
+    <script>
+        // Carrega os modelos necessários e inicia o vídeo
+        Promise.all([
+            faceapi.nets.tinyFaceDetector.loadFromUri('/models'),
+            faceapi.nets.faceLandmark68Net.loadFromUri('/models'),
+            faceapi.nets.faceRecognitionNet.loadFromUri('/models')
+        ]).then(startVideo);
+
+        // Função para iniciar a câmera e transmitir o vídeo para o elemento de vídeo
+        async function startVideo() {
+            const video = document.getElementById('myVideo');
             try {
-                const stream = await navigator.mediaDevices.getUserMedia(constraints);
-                const video = document.getElementById('video');
+                // Solicitar permissão do usuário para acessar a câmera
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+
+                // Adicionar o fluxo de vídeo ao elemento de vídeo
                 video.srcObject = stream;
+
+                // Inicia a detecção de rostos a cada 100 milissegundos
+                setInterval(detectAndCompareFaces, 100);
             } catch (error) {
-                console.error('Error accessing the camera', error);
+                console.error('Erro ao acessar a câmera: ', error);
+                alert('Não foi possível acessar a câmera. Verifique se as permissões estão corretas.');
             }
         }
 
-        // Função para iniciar a detecção de faces
-        async function startFaceDetection() {
-            await faceapi.nets.tinyFaceDetector.loadFromUri('/models');
-            await faceapi.nets.faceLandmark68Net.loadFromUri('/models');
-            await faceapi.nets.faceExpressionNet.loadFromUri('/models');
-
-            const video = document.getElementById('video');
-            const canvas = document.getElementById('canvas');
-            const displaySize = { width: video.width, height: video.height };
-            faceapi.matchDimensions(canvas, displaySize);
-
-            video.addEventListener('play', () => {
-                setInterval(async () => {
-                    const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions())
-                        .withFaceLandmarks()
-                        .withFaceExpressions();
-                    const resizedDetections = faceapi.resizeResults(detections, displayLocation);
-                    canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
-                    faceapi.draw.drawDetections(canvas, resizedDetections);
-                    faceapi.draw.drawFaceLandmarks(canvas, resizedDetections);
-                    faceapi.draw.drawFaceExpressions(canvas, resizedDetections);
-                }, 100);
-            });
+        // Função para detectar rostos e compará-los com as imagens no Firebase Storage
+        async function detectAndCompareFaces() {
+            const video = document.getElementById('myVideo');
+            // Detecta rosto no vídeo
+            const detection = await faceapi.detectSingleFace(video).withFaceDescriptor();
+            if (detection) {
+                // Compara o rosto detectado com as imagens no Firebase Storage
+                await compareFaceWithStoredImages(detection.descriptor);
+            }
         }
 
-        // Listener para quando o conteúdo estiver carregado
-        document.addEventListener('DOMContentLoaded', (event) => {
-            startCamera().then(startFaceDetection);
-        });
+        // Função para comparar o rosto detectado com as imagens no Firebase Storage
+        async function compareFaceWithStoredImages(detectedFaceDescriptor) {
+            // Recupera a referência do Firebase Storage
+            const storageRef = firebase.storage().ref();
+
+            try {
+                // Recupera a lista de imagens salvas no Firebase Storage
+                const imageList = await storageRef.listAll();
+                
+                // Itera sobre cada imagem na lista
+                for (const imageRef of imageList.items) {
+                    // Recupera a URL da imagem
+                    const imageURL = await imageRef.getDownloadURL();
+                    
+                    // Carrega a imagem usando a face-api.js
+                    const image = await faceapi.fetchImage(imageURL);
+                    
+                    // Detecta o rosto na imagem
+                    const faceDescriptor = await faceapi.detectSingleFace(image).withFaceDescriptor();
+                    
+                    // Compara o rosto detectado com o rosto na imagem
+                    const distance = faceapi.euclideanDistance(detectedFaceDescriptor, faceDescriptor.descriptor);
+                    
+                    // Define um limite de similaridade (ajuste conforme necessário)
+                    const similarityThreshold = 0.6;
+                    
+                    // Verifica se a distância é menor que o limite de similaridade
+                    if (distance < similarityThreshold) {
+                        console.log(`Correspondência encontrada com ${imageRef.name}`);
+                        // Faça o que for necessário quando encontrar uma correspondência
+                    }
+                }
+            } catch (error) {
+                console.error('Erro ao comparar rostos:', error);
+            }
+        }
     </script>
 </body>
 </html>
