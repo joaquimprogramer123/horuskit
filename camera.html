@@ -16,6 +16,42 @@
     </style>
 </head>
 <body>
+
+<!-- Instancia para importar as bibliotecas do firebase namespace-->
+
+<script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-storage-compat.js"></script>
+
+    
+
+     <!-- Intancia para conectar com o firebase-->
+
+    <script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyAdVrAXk70WCDvw6nveao9SwCAAAbIpsts",
+    authDomain: "horus-87f81.firebaseapp.com",
+    projectId: "horus-87f81",
+    storageBucket: "horus-87f81.appspot.com",
+    messagingSenderId: "692067844473",
+    appId: "1:692067844473:web:1a18ba28a30c0f48332fa8",
+    measurementId: "G-FR49ZZTE4E"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+</script>
+
+
+    
     <h1>Vídeo WebRTC</h1>
 
     <div id="videoStream">
@@ -23,8 +59,24 @@
         <canvas id="overlay"></canvas>
     </div>
 
-    <!-- Carregando os modelos -->
-    <script>
+    
+    <script type="module">
+
+    // TODO: Replace the following with your app's Firebase project configuration
+    // See: https://firebase.google.com/docs/web/learn-more#config-object
+    const firebaseConfig = {
+        apiKey: "AIzaSyAdVrAXk70WCDvw6nveao9SwCAAAbIpsts",
+        authDomain: "horus-87f81.firebaseapp.com",
+        projectId: "horus-87f81",
+        storageBucket: "horus-87f81.appspot.com",
+        messagingSenderId: "692067844473",
+        appId: "1:692067844473:web:1a18ba28a30c0f48332fa8",
+        measurementId: "G-FR49ZZTE4E"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+
         // Carrega os modelos necessários e inicia o vídeo
         Promise.all([
             faceapi.nets.tinyFaceDetector.loadFromUri('/models'),
