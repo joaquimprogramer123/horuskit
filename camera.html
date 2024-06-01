@@ -43,8 +43,10 @@
         // Função para detectar rostos e compará-los com as imagens no Firebase Storage
         async function detectAndCompareFaces() {
             const video = document.getElementById('myVideo');
-            // Detecta rosto no vídeo
-            const detection = await faceapi.detectSingleFace(video).withFaceDescriptor();
+            // Configuração para o detector de rostos
+            const options = new faceapi.TinyFaceDetectorOptions();
+            // Detecta rosto no vídeo com descritor de rosto
+            const detection = await faceapi.detectSingleFace(video, options).withFaceLandmarks().withFaceDescriptor();
             if (detection) {
                 // Compara o rosto detectado com as imagens no Firebase Storage
                 await compareFaceWithStoredImages(detection.descriptor);
@@ -69,18 +71,20 @@
                     const image = await faceapi.fetchImage(imageURL);
                     
                     // Detecta o rosto na imagem
-                    const faceDescriptor = await faceapi.detectSingleFace(image).withFaceDescriptor();
+                    const faceDetection = await faceapi.detectSingleFace(image).withFaceLandmarks().withFaceDescriptor();
                     
-                    // Compara o rosto detectado com o rosto na imagem
-                    const distance = faceapi.euclideanDistance(detectedFaceDescriptor, faceDescriptor.descriptor);
-                    
-                    // Define um limite de similaridade (ajuste conforme necessário)
-                    const similarityThreshold = 0.6;
-                    
-                    // Verifica se a distância é menor que o limite de similaridade
-                    if (distance < similarityThreshold) {
-                        console.log(`Correspondência encontrada com ${imageRef.name}`);
-                        // Faça o que for necessário quando encontrar uma correspondência
+                    if (faceDetection) {
+                        // Compara o rosto detectado com o rosto na imagem
+                        const distance = faceapi.euclideanDistance(detectedFaceDescriptor, faceDetection.descriptor);
+                        
+                        // Define um limite de similaridade (ajuste conforme necessário)
+                        const similarityThreshold = 0.6;
+                        
+                        // Verifica se a distância é menor que o limite de similaridade
+                        if (distance < similarityThreshold) {
+                            console.log(`Correspondência encontrada com ${imageRef.name}`);
+                            // Faça o que for necessário quando encontrar uma correspondência
+                        }
                     }
                 }
             } catch (error) {
@@ -90,5 +94,3 @@
     </script>
 </body>
 </html>
-
-
