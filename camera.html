@@ -5,12 +5,23 @@
     <title>Vídeo WebRTC Autoplay</title>
     <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
     <script src="face-api.js-master/dist/face-api.js"></script>
+    <style>
+        #videoStream {
+            position: relative;
+        }
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+    </style>
 </head>
 <body>
     <h1>Vídeo WebRTC</h1>
 
     <div id="videoStream">
         <video id="myVideo" autoplay playsinline></video>
+        <canvas id="overlay"></canvas>
     </div>
 
     <!-- Carregando os modelos -->
@@ -25,6 +36,7 @@
         // Função para iniciar a câmera e transmitir o vídeo para o elemento de vídeo
         async function startVideo() {
             const video = document.getElementById('myVideo');
+            const canvas = document.getElementById('overlay');
             try {
                 // Solicitar permissão do usuário para acessar a câmera
                 const stream = await navigator.mediaDevices.getUserMedia({ video: true });
@@ -32,8 +44,14 @@
                 // Adicionar o fluxo de vídeo ao elemento de vídeo
                 video.srcObject = stream;
 
+                // Redimensionar o canvas para corresponder ao tamanho do vídeo
+                video.addEventListener('play', () => {
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+                });
+
                 // Inicia a detecção de rostos a cada 1000 milissegundos
-                setInterval(detectAndCompareFaces, 1000);
+                setInterval(() => detectAndCompareFaces(video, canvas), 1000);
             } catch (error) {
                 console.error('Erro ao acessar a câmera: ', error);
                 alert('Não foi possível acessar a câmera. Verifique se as permissões estão corretas.');
@@ -41,8 +59,7 @@
         }
 
         // Função para detectar rostos e compará-los com as imagens no Firebase Storage
-        async function detectAndCompareFaces() {
-            const video = document.getElementById('myVideo');
+        async function detectAndCompareFaces(video, canvas) {
             // Configuração para o detector de rostos
             const options = new faceapi.TinyFaceDetectorOptions({ inputSize: 128, scoreThreshold: 0.5 });
             try {
@@ -53,6 +70,11 @@
                     // Verifica se a bounding box é válida
                     if (box && box.top !== null && box.bottom !== null && box.left !== null && box.right !== null) {
                         console.log('Bounding box válida:', box);
+                        // Desenhar a bounding box no canvas
+                        const dims = faceapi.matchDimensions(canvas, video, true);
+                        const resizedDetections = faceapi.resizeResults(detection, dims);
+                        faceapi.draw.drawDetections(canvas, resizedDetections);
+
                         // Compara o rosto detectado com as imagens no Firebase Storage
                         await compareFaceWithStoredImages(detection.descriptor);
                     } else {
