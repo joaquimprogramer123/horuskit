@@ -122,7 +122,15 @@
             // Verifica se há imagens no storage
             if (imageList.items.length === 0) {
                 console.log("Nenhuma imagem encontrada no Firebase Storage.");
-                return
+                return;
+            }
+        } catch (error) {
+            console.error('Erro ao comparar rosto com imagens no Firebase Storage:', error);
+        }
+    }
+
+    // Iniciar o vídeo quando a página é carregada
+    startVideo();
 </script>
 </body>
 </html>
