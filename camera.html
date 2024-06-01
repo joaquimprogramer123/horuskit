@@ -83,15 +83,13 @@
     async function detectAndCompareFaces(video, canvas) {
         // Use TensorFlow.js and TensorFlow Models for face detection
         const model = await faceLandmarksDetection.load(
-            faceLandmarksDetection.SupportedPackages.mediapipeFacemesh,
-            { shouldLoadIrisModel: false }
+            faceLandmarksDetection.SupportedPackages.TINY_FACE_DETECTOR
         );
 
         try {
             // Detect face in the video
             const predictions = await model.estimateFaces({
-                input: video,
-                predictIrises: false
+                input: video
             });
 
             if (predictions.length > 0) {
