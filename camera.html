@@ -5,10 +5,29 @@
     <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
     <script src="face-api.js-master/dist/face-api.js"></script>
     <style>
-        #videoStream {
-            position: relative;
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
         }
-        canvas {
+
+        #videoStream {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        video, canvas {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
             position: absolute;
             top: 0;
             left: 0;
