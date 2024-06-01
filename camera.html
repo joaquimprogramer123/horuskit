@@ -34,27 +34,25 @@
 
     // Your web app's Firebase configuration
     const firebaseConfig = {
-    apiKey: "AIzaSyAdVrAXk70WCDvw6nveao9SwCAAAbIpsts",
-    authDomain: "horus-87f81.firebaseapp.com",
-    projectId: "horus-87f81",
-    storageBucket: "horus-87f81.appspot.com",
-    messagingSenderId: "692067844473",
-    appId: "1:692067844473:web:1a18ba28a30c0f48332fa8",
-    measurementId: "G-FR49ZZTE4E"
+        apiKey: "AIzaSyAdVrAXk70WCDvw6nveao9SwCAAAbIpsts",
+        authDomain: "horus-87f81.firebaseapp.com",
+        projectId: "horus-87f81",
+        storageBucket: "horus-87f81.appspot.com",
+        messagingSenderId: "692067844473",
+        appId: "1:692067844473:web:1a18ba28a30c0f48332fa8",
+        measurementId: "G-FR49ZZTE4E"
     };
 
     // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const analytics = getAnalytics(app);
-</script>
-
-<script>
-    // Carrega os modelos necessários e inicia o vídeo
-    Promise.all([
-        faceapi.nets.tinyFaceDetector.loadFromUri('/models'),
-        faceapi.nets.faceLandmark68Net.loadFromUri('/models'),
-        faceapi.nets.faceRecognitionNet.loadFromUri('/models')
-    ]).then(startVideo);
+    async function initializeFirebase() {
+        // Verifica se o Firebase já está inicializado
+        if (!firebase.apps.length) {
+            // Se não estiver inicializado, inicializa-o
+            await firebase.initializeApp(firebaseConfig);
+            console.log("Firebase inicializado com sucesso!");
+        }
+        // Se já estiver inicializado, não faz nada
+    }
 
     // Função para iniciar a câmera e transmitir o vídeo para o elemento de vídeo
     async function startVideo() {
@@ -72,6 +70,9 @@
                 canvas.width = video.videoWidth;
                 canvas.height = video.videoHeight;
             });
+
+            // Inicializa o Firebase após garantir que o vídeo está carregado e pronto
+            await initializeFirebase();
 
             // Inicia a detecção de rostos a cada 1000 milissegundos
             setInterval(() => detectAndCompareFaces(video, canvas), 1000);
@@ -121,53 +122,7 @@
             // Verifica se há imagens no storage
             if (imageList.items.length === 0) {
                 console.log("Nenhuma imagem encontrada no Firebase Storage.");
-                return;
-            }
-            
-            let foundMatch = false;
-
-            // Itera sobre cada imagem na lista
-            for (const imageRef of imageList.items) {
-                // Recupera a URL da imagem
-                const imageURL = await imageRef.getDownloadURL();
-                
-                // Carrega a imagem usando a face-api.js
-                const image = await faceapi.fetchImage(imageURL);
-                
-                // Detecta o rosto na imagem
-                const faceDetection = await faceapi.detectSingleFace(image).withFaceLandmarks().withFaceDescriptor();
-                
-                if (faceDetection) {
-                    const { box } = faceDetection.detection;
-                    // Verifica se a bounding box é válida
-                    if (box && box.top !== null && box.bottom !== null && box.left !== null && box.right !== null) {
-                        console.log('Bounding box válida na imagem:', box);
-                        // Compara o rosto detectado com o rosto na imagem
-                        const distance = faceapi.euclideanDistance(detectedFaceDescriptor, faceDetection.descriptor);
-                        
-                        // Define um limite de similaridade (ajuste conforme necessário)
-                        const similarityThreshold = 0.6;
-                        
-                        // Verifica se a distância é menor que o limite de similaridade
-                        if (distance < similarityThreshold) {
-                            console.log(`Correspondência encontrada com ${imageRef.name}`);
-                            foundMatch = true;
-                            // Faça o que for necessário quando encontrar uma correspondência
-                        }
-                    } else {
-                        console.error('Bounding box inválida na imagem:', box);
-                    }
-                }
-            }
-
-            if (!foundMatch) {
-                console.log("Nenhuma correspondência encontrada com as imagens no Firebase Storage.");
-            }
-        } catch (error) {
-            console.error('Erro ao comparar rostos:', error);
-        }
-    }
+                return
 </script>
-
 </body>
 </html>
