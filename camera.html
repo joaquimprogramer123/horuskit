@@ -137,8 +137,7 @@
             }
         }
 
-   // Função para comparar o rosto detectado com as imagens no Firebase Storage
-    async function compareFaceWithStoredImages(detectedFaceDescriptor) {
+  async function compareFaceWithStoredImages(detectedFaceDescriptor) {
     const storageRef = firebase.storage().ref();
     let matchFound = false;  // Variável para rastrear se uma correspondência foi encontrada
 
@@ -149,7 +148,7 @@
         // Itera sobre cada imagem na lista
         for (const imageRef of imageList.items) {
             // Recupera a URL da imagem
-            const imageURL = await imageRef.getDownload40URL();
+            const imageURL = await imageRef.getDownloadURL();
             
             // Carrega a imagem usando a face-api.js
             const image = await faceapi.fetchImage(imageURL);
@@ -183,6 +182,9 @@
         console.error('Erro ao comparar rostos:', error);
         window.location.href = 'negado.html';  // Em caso de erro, considera como não autorizado
     }
+}
+
+</script>
 
     
     </script>
