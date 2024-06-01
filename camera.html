@@ -71,7 +71,8 @@
                 canvas.height = video.videoHeight;
             });
 
-            // Inicializa o Firebase após garantir que o vídeo está carregado e pronto
+            // Carrega os modelos necessários antes de iniciar a detecção
+            await faceapi.nets.tinyFaceDetector.loadFromUri('face-api.js-master/models');
             await initializeFirebase();
 
             // Inicia a detecção de rostos a cada 1000 milissegundos
