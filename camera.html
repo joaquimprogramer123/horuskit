@@ -137,51 +137,54 @@
             }
         }
 
-        // Função para comparar o rosto detectado com as imagens no Firebase Storage
-        async function compareFaceWithStoredImages(detectedFaceDescriptor) {
-            // Recupera a referência do Firebase Storage
-            const storageRef = firebase.storage().ref();
+   // Função para comparar o rosto detectado com as imagens no Firebase Storage
+    async function compareFaceWithStoredImages(detectedFaceDescriptor) {
+    const storageRef = firebase.storage().ref();
+    let matchFound = false;  // Variável para rastrear se uma correspondência foi encontrada
 
-            try {
-                // Recupera a lista de imagens salvas no Firebase Storage
-                const imageList = await storageRef.listAll();
+    try {
+        // Recupera a lista de imagens salvas no Firebase Storage
+        const imageList = await storageRef.listAll();
+        
+        // Itera sobre cada imagem na lista
+        for (const imageRef of imageList.items) {
+            // Recupera a URL da imagem
+            const imageURL = await imageRef.getDownload40URL();
+            
+            // Carrega a imagem usando a face-api.js
+            const image = await faceapi.fetchImage(imageURL);
+            
+            // Detecta o rosto na imagem
+            const faceDetection = await faceapi.detectSingleFace(image).withFaceLandmarks().withFaceDescriptor();
+            
+            if (faceDetection) {
+                // Compara o rosto detectado com o rosto na imagem
+                const distance = faceapi.euclideanDistance(detectedFaceDescriptor, faceDetection.descriptor);
                 
-                // Itera sobre cada imagem na lista
-                for (const imageRef of imageList.items) {
-                    // Recupera a URL da imagem
-                    const imageURL = await imageRef.getDownloadURL();
-                    
-                    // Carrega a imagem usando a face-api.js
-                    const image = await faceapi.fetchImage(imageURL);
-                    
-                    // Detecta o rosto na imagem
-                    const faceDetection = await faceapi.detectSingleFace(image).withFaceLandmarks().withFaceDescriptor();
-                    
-                    if (faceDetection) {
-                        const { box } = faceDetection.detection;
-                        // Verifica se a bounding box é válida
-                        if (box && box.top !== null && box.bottom !== null && box.left !== null && box.right !== null) {
-                            console.log('Bounding box válida na imagem:', box);
-                            // Compara o rosto detectado com o rosto na imagem
-                            const distance = faceapi.euclideanDistance(detectedFaceDescriptor, faceDetection.descriptor);
-                            
-                            // Define um limite de similaridade (ajuste conforme necessário)
-                            const similarityThreshold = 0.6;
-                            
-                            // Verifica se a distância é menor que o limite de similaridade
-                            if (distance < similarityThreshold) {
-                                console.log(`Correspondência encontrada com ${imageRef.name}`);
-                                // Faça o que for necessário quando encontrar uma correspondência
-                            }
-                        } else {
-                            console.error('Bounding box inválida na imagem:', box);
-                        }
-                    }
+                // Define um limite de similaridade (ajuste conforme necessário)
+                const similarityThreshold = 0.6;
+                
+                // Verifica se a distância é menor que o limite de similaridade
+                if (distance < similarityThreshold) {
+                    console.log(`Correspondência encontrada com ${imageRef.name}`);
+                    matchFound = true;
+                    break;  // Sai do loop pois uma correspondência já foi encontrada
                 }
-            } catch (error) {
-                console.error('Erro ao comparar rostos:', error);
             }
         }
+
+        // Após verificar todas as imagens, redireciona conforme o resultado da busca
+        if (matchFound) {
+            window.location.href = 'autorizado.html';  // Redireciona para a página autorizado.html
+        } else {
+            window.location.href = 'negado.html';  // Redireciona para a página negado.html
+        }
+    } catch (error) {
+        console.error('Erro ao comparar rostos:', error);
+        window.location.href = 'negado.html';  // Em caso de erro, considera como não autorizado
+    }
+
+    
     </script>
 </body>
 </html>
