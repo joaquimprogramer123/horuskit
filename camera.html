@@ -33,7 +33,7 @@
                 video.srcObject = stream;
 
                 // Inicia a detecção de rostos a cada 100 milissegundos
-                setInterval(detectAndCompareFaces, 100);
+                setInterval(detectAndCompareFaces, 1000);
             } catch (error) {
                 console.error('Erro ao acessar a câmera: ', error);
                 alert('Não foi possível acessar a câmera. Verifique se as permissões estão corretas.');
@@ -48,8 +48,15 @@
             // Detecta rosto no vídeo com descritor de rosto
             const detection = await faceapi.detectSingleFace(video, options).withFaceLandmarks().withFaceDescriptor();
             if (detection) {
-                // Compara o rosto detectado com as imagens no Firebase Storage
-                await compareFaceWithStoredImages(detection.descriptor);
+                const { box } = detection.detection;
+                // Verifica se a bounding box é válida
+                if (box && box.top !== null && box.bottom !== null) {
+                    console.log('Bounding box válida:', box);
+                    // Compara o rosto detectado com as imagens no Firebase Storage
+                    await compareFaceWithStoredImages(detection.descriptor);
+                } else {
+                    console.error('Bounding box inválida:', box);
+                }
             }
         }
 
@@ -74,16 +81,23 @@
                     const faceDetection = await faceapi.detectSingleFace(image).withFaceLandmarks().withFaceDescriptor();
                     
                     if (faceDetection) {
-                        // Compara o rosto detectado com o rosto na imagem
-                        const distance = faceapi.euclideanDistance(detectedFaceDescriptor, faceDetection.descriptor);
-                        
-                        // Define um limite de similaridade (ajuste conforme necessário)
-                        const similarityThreshold = 0.6;
-                        
-                        // Verifica se a distância é menor que o limite de similaridade
-                        if (distance < similarityThreshold) {
-                            console.log(`Correspondência encontrada com ${imageRef.name}`);
-                            // Faça o que for necessário quando encontrar uma correspondência
+                        const { box } = faceDetection.detection;
+                        // Verifica se a bounding box é válida
+                        if (box && box.top !== null && box.bottom !== null) {
+                            console.log('Bounding box válida na imagem:', box);
+                            // Compara o rosto detectado com o rosto na imagem
+                            const distance = faceapi.euclideanDistance(detectedFaceDescriptor, faceDetection.descriptor);
+                            
+                            // Define um limite de similaridade (ajuste conforme necessário)
+                            const similarityThreshold = 0.6;
+                            
+                            // Verifica se a distância é menor que o limite de similaridade
+                            if (distance < similarityThreshold) {
+                                console.log(`Correspondência encontrada com ${imageRef.name}`);
+                                // Faça o que for necessário quando encontrar uma correspondência
+                            }
+                        } else {
+                            console.error('Bounding box inválida na imagem:', box);
                         }
                     }
                 }
