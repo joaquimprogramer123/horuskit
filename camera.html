@@ -92,7 +92,7 @@
         const video = document.getElementById('myVideo');
         const canvas = document.getElementById('overlay');
         try {
-            const stream = await navigator.mediaDevices.getUser: true });
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
             video.srcObject = stream;
             video.addEventListener('play', () => {
                 canvas.width = video.videoWidth;
