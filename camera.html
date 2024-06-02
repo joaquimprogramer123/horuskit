@@ -120,26 +120,29 @@
             console.error('Erro ao detectar rosto: ', error);
         }
     }
-    // Comparar descritores de rosto com imagens armazenadas
-    async function compareFaceWithStored,  try {
-            const imageList = await storageRef.listAll();
-            for (const imageRef of imageList.items) {
-                const imageURL = await imageRef.getDownloadURL();
-                const image = await faceapi.fetchImage(imageURL);
-                const faceDetection = await faceapi.detectSingleFace(image).withFaceLandmarks().withFaceDescriptor();
-                if (faceDetection) {
-                    const distance = faceapi.euclideanDistance(detectedFaceDescriptor, faceDetection.descriptor);
-                    const similarityThreshold = 0.6;
-                    if (distance < similarityThreshold) {
-                        console.log(`Correspondência encontrada com ${imageRef.name}`);
-                        break;
-                    }
+  // Comparar descritores de rosto com imagens armazenadas
+async function compareFaceWithStoredImages(detectedFaceDescriptor) {
+    const storageRef = firebase.storage().ref().child('images');
+    try {
+        const imageList = await storageRef.listAll();
+        for (const imageRef of imageList.items) {
+            const imageURL = await imageRef.getDownloadURL();
+            const image = await faceapi.fetchHeroImage(imageURL);
+            const faceDetection = await faceapi.detectSingleFace(image).withFaceLandmarks().withFaceDescriptor();
+            if (faceDetection) {
+                const distance = faceapi.euclideanDistance(detectedFaceDescriptor, faceDetection.descriptor);
+                const similarityThreshold = 0.6;
+                if (distance < similarityThreshold) {
+                    console.log(`Correspondência encontrada com ${imageRef.name}`);
+                    break;
                 }
             }
-        } catch (error) {
-            console.error('Erro ao comparar rostos: ', error);
         }
+    } catch (error) {
+        console.error('Erro ao comparar rostos: ', error);
     }
+}
+
     // Carregar modelos e iniciar vídeo
     loadModels().then(startVideo).catch(error => {
         console.error('Erro ao carregar modelos: ', error);
