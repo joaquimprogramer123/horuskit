@@ -180,7 +180,7 @@
                 const distance = faceapi.euclideanDistance(detectedFaceDescriptor, faceDetection.descriptor);
                 
                 // Define um limite de similaridade (ajuste conforme necessário)
-                const similarityThreshold = 0.2; // Permite até 20% de diferença
+                const similarityThreshold = 0.6; // Permite até 20% de diferença
                 
                 // Verifica se a distância é menor que o limite de similaridade
                 if (distance < similarityThreshold) {
