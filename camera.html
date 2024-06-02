@@ -67,7 +67,9 @@
     </div>
     
     
-<script type="module">
+
+    <script type="module">
+        
     // Configuração do projeto Firebase
     const firebaseConfig = {
         apiKey: "AIzaSyAdVrAXk70WCDvw6nveao9SwCAAAbIpsts",
@@ -119,10 +121,7 @@
         }
     }
     // Comparar descritores de rosto com imagens armazenadas
-    async function compareFaceWithStoredImages(detectedFaceDescriptor) {
-        const storageRef = firebase.storage().ref().child('images');
-        let matchFound = false;
-        try {
+    async function compareFaceWithStored,  try {
             const imageList = await storageRef.listAll();
             for (const imageRef of imageList.items) {
                 const imageURL = await imageRef.getDownloadURL();
@@ -133,19 +132,12 @@
                     const similarityThreshold = 0.6;
                     if (distance < similarityThreshold) {
                         console.log(`Correspondência encontrada com ${imageRef.name}`);
-                        matchFound = true;
                         break;
                     }
                 }
             }
-            if (matchFound) {
-                window.location.href = 'autorizado.html';
-            } else {
-                window.location.href = 'negado.html';
-            }
         } catch (error) {
             console.error('Erro ao comparar rostos: ', error);
-            window.location.href = 'negado.html';
         }
     }
     // Carregar modelos e iniciar vídeo
@@ -200,12 +192,15 @@
 
     // Chamar a função para testar o acesso da face-api.js ao Firebase Storage
     testFaceApiAccessToFirebaseStorage();
-
-
-
-
-
+    
 </script>
+
+
+
+
+
+
+
 
 
 
