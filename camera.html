@@ -188,6 +188,32 @@ async function compareFaceWithStoredImages(detectedFaceDescriptor) {
 // Carrega os modelos e inicia o vídeo
 loadModels().then(startVideo);
 
+        
+// Verifica se o Face-API está carregado corretamente e pronto para uso
+if (faceapi.nets.ssdMobilenetv1 && faceapi.nets.faceLandmark68Net && faceapi.nets.faceRecognitionNet) {
+    console.log('Face-API carregado com sucesso!');
+} else {
+    console.error('Erro ao carregar o Face-API. Verifique se os modelos foram carregados corretamente.');
+}
+
+// Verifica se é possível acessar as fotos do Firebase Storage e compará-las com o rosto detectado
+async function testFaceComparison() {
+    const storageRef = firebase.storage().ref();
+    try {
+        const imageList = await storageRef.listAll();
+        if (imageList.items.length > 0) {
+            console.log('Fotos encontradas no Firebase Storage. Iniciando comparação de rostos...');
+            // Insira aqui o código para comparar as fotos do Firebase Storage com o rosto detectado
+        } else {
+            console.warn('Nenhuma foto encontrada no Firebase Storage. Não é possível realizar a comparação de rostos.');
+        }
+    } catch (error) {
+        console.error('Erro ao acessar o Firebase Storage:', error);
+    }
+}
+
+// Chama a função para testar a comparação de rostos
+testFaceComparison();
 
     
     </script>
