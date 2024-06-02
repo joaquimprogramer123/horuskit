@@ -158,7 +158,7 @@
 
   async function compareFaceWithStoredImages(detectedFaceDescriptor) {
     const storageRef = firebase.storage().ref();
-    let matchFound = false;  // Variável para rastrear se uma correspondência foi encontrada
+    let matchFound = false;
 
     try {
         // Recupera a lista de imagens salvas no Firebase Storage
@@ -180,7 +180,7 @@
                 const distance = faceapi.euclideanDistance(detectedFaceDescriptor, faceDetection.descriptor);
                 
                 // Define um limite de similaridade (ajuste conforme necessário)
-                const similarityThreshold = 0.6;
+                const similarityThreshold = 0.2; // Permite até 20% de diferença
                 
                 // Verifica se a distância é menor que o limite de similaridade
                 if (distance < similarityThreshold) {
