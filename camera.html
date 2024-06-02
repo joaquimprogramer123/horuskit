@@ -80,6 +80,40 @@
 
     
     
+
+    <script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyAdVrAXk70WCDvw6nveao9SwCAAAbIpsts",
+    authDomain: "horus-87f81.firebaseapp.com",
+    projectId: "horus-87f81",
+    storageBucket: "horus-87f81.appspot.com",
+    messagingSenderId: "692067844473",
+    appId: "1:692067844473:web:1a18ba28a30c0f48332fa8",
+    measurementId: "G-FR49ZZTE4E"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+</script>
+
+
+    
+<h1>Vídeo WebRTC</h1>
+
+<div id="videoStream">
+    <video id="myVideo" autoplay playsinline></video>
+    <canvas id="overlay"></canvas>
+</div>
+
 <script type="module">
     // Configuração do projeto Firebase
     const firebaseConfig = {
@@ -160,70 +194,73 @@
                     }
                 }
             }
-
-           
-
-    // Carregar modelos e iniciar vídeo
-    loadModels().then(startVideo).catch(error => {
-        console.error('Erro ao carregar modelos: ', error);
-    });
-
-    // Testar se Firebase e Face-API estão inicializados corretamente
-    if (firebase.apps.length > 0) {
-        console.log('Firebase inicializado com sucesso!');
-    } else {
-        console.error('Erro ao inicializar Firebase.');
-    }
-
-    // Verificar se o Firebase Storage está pronto para uso
-    const storage = firebase.storage();
-    try {
-        const storageRef = storage.ref();
-        console.log('Firebase Storage está pronto para uso!');
-    } catch (error) {
-        console.error('Erro ao inicializar Firebase Storage: ', error);
-    }
-
-    async function testFaceComparison() {
-        const storageRef = firebase.storage().ref();
-        try {
-            const imageList = await storageRef.listAll();
-            if (imageList.items.length > 0) {
-                console.log('Imagens encontradas no Firebase Storage. Iniciando comparação de rostos...');
-            } else {
-                console.warn('Nenhuma imagem encontrada no Firebase Storage. Não é possível realizar a comparação de rostos.');
-            }
         } catch (error) {
-            console.error('Erro ao acessar o Firebase Storage: ', error);
+            console.error('Erro ao comparar rosto: ', error);
+        } // Esta chave estava faltando.
+
+        // Carregar modelos e iniciar vídeo
+        loadModels().then(startVideo).catch(error => {
+            console.error('Erro ao carregar modelos: ', error);
+        });
+
+        // Testar se Firebase e Face-API estão inicializados corretamente
+        if (firebase.apps.length > 0) {
+            console.log('Firebase inicializado com sucesso!');
+        } else {
+            console.error('Erro ao inicializar Firebase.');
         }
-    }
 
-    // Chamar a função para testar a comparação de rostos
-    testFaceComparison();
-
-     // Testar se a API do face-api.js está conseguindo acessar o Firebase Storage
-    async function testFaceApiAccessToFirebaseStorage() {
-        const storageRef = firebase.storage().ref().child('images');
+        // Verificar se o Firebase Storage está pronto para uso
+        const storage = firebase.storage();
         try {
-            const imageList = await storageRef.listAll();
-            if (imageList.items.length > 0) {
-                console.log('A API do face-api.js conseguiu acessar o Firebase Storage e encontrou imagens.');
-            } else {
-                console.warn('A API do face-api.js conseguiu acessar o Firebase Storage, mas não encontrou imagens.');
-            }
+            const storageRef = storage.ref();
+            console.log('Firebase Storage está pronto para uso!');
         } catch (error) {
-            console.error('Erro ao acessar o Firebase Storage pela API do face-api.js: ', error);
+            console.error('Erro ao inicializar Firebase Storage: ', error);
         }
-    }
 
-    // Chamar a função para testar o acesso da face-api.js ao Firebase Storage
-    testFaceApiAccessToFirebaseStorage();
+        async function testFaceComparison() {
+            const storageRef = firebase.storage().ref();
+            try {
+                const imageList = await storageRef.listAll();
+                if (imageList.items.length > 0) {
+                    console.log('Imagens encontradas no Firebase Storage. Iniciando comparação de rostos...');
+                } else {
+                    console.warn('Nenhuma imagem encontrada no Firebase Storage. Não é possível realizar a comparação de rostos.');
+                }
+            } catch (error) {
+                console.error('Erro ao acessar o Firebase Storage: ', error);
+            }
+        }
+
+        // Chamar a função para testar a comparação de rostos
+        testFaceComparison();
+
+        // Testar se a API do face-api.js está conseguindo acessar o Firebase Storage
+        async function testFaceApiAccessToFirebaseStorage() {
+            const storageRef = firebase.storage().ref().child('images');
+            try {
+                const imageList = await storageRef.listAll();
+                if (imageList.items.length > 0) {
+                    console.log('A API do face-api.js conseguiu acessar o Firebase Storage e encontrou imagens.');
+                } else {
+                    console.warn('A API do face-api.js conseguiu acessar o Firebase Storage, mas não encontrou imagens.');
+                }
+            } catch (error) {
+                console.error('Erro ao acessar o Firebase Storage pela API do face-api.js: ', error);
+            }
+        }
+
+        // Chamar a função para testar o acesso da face-api.js ao Firebase Storage
+        testFaceApiAccessToFirebaseStorage();
+    }
+</script>
 
 
 
 
     
-</script>
+
 
     
        
