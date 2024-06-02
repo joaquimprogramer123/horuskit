@@ -161,16 +161,7 @@
                 }
             }
 
-            if (matchFound) {
-                window.location.href = 'autorizado.html';
-            } else {
-                window.location.href = 'negado.html';
-            }
-        } catch (error) {
-            console.error('Erro ao comparar rostos: ', error);
-            window.location.href = 'negado.html';
-        }
-    }
+           
 
     // Carregar modelos e iniciar vídeo
     loadModels().then(startVideo).catch(error => {
