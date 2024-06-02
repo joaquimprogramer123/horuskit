@@ -218,7 +218,22 @@ async function testFaceComparison() {
 // Chama a função para testar a comparação de rostos
 testFaceComparison();
 
-    
+ // Verifica se o Firebase foi inicializado com sucesso
+if (firebase && firebase.apps && firebase.apps.length > 0) {
+    console.log('Firebase inicializado com sucesso!');
+} else {
+    console.error('Erro ao inicializar o Firebase.');
+}
+
+// Verifica se o Firebase Storage está sendo iniciado corretamente
+const storage = firebase.storage();
+try {
+    const storageRef = storage.ref();
+    console.log('Firebase Storage está pronto para uso!');
+} catch (error) {
+    console.error('Erro ao iniciar o Firebase Storage:', error);
+}
+       
     </script>
 </body>
 </html>
