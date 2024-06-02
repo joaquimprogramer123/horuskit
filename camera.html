@@ -151,8 +151,9 @@ async function detectAndCompareFaces(video, canvas) {
 }
 
 // Função para comparar descritores de rosto com imagens armazenadas no Firebase Storage
+// Função para comparar descritores de rosto com imagens armazenadas na pasta 'images' no Firebase Storage
 async function compareFaceWithStoredImages(detectedFaceDescriptor) {
-    const storageRef = firebase.storage().ref();
+    const storageRef = firebase.storage().ref().child('images'); // Ajuste para procurar dentro da pasta 'images'
     let matchFound = false;
 
     try {
@@ -184,6 +185,8 @@ async function compareFaceWithStoredImages(detectedFaceDescriptor) {
         window.location.href = 'negado.html';
     }
 }
+
+        
 
 // Carrega os modelos e inicia o vídeo
 loadModels().then(startVideo);
