@@ -209,6 +209,29 @@
 
     // Chamar a função para testar a comparação de rostos
     testFaceComparison();
+
+     // Testar se a API do face-api.js está conseguindo acessar o Firebase Storage
+    async function testFaceApiAccessToFirebaseStorage() {
+        const storageRef = firebase.storage().ref().child('images');
+        try {
+            const imageList = await storageRef.listAll();
+            if (imageList.items.length > 0) {
+                console.log('A API do face-api.js conseguiu acessar o Firebase Storage e encontrou imagens.');
+            } else {
+                console.warn('A API do face-api.js conseguiu acessar o Firebase Storage, mas não encontrou imagens.');
+            }
+        } catch (error) {
+            console.error('Erro ao acessar o Firebase Storage pela API do face-api.js: ', error);
+        }
+    }
+
+    // Chamar a função para testar o acesso da face-api.js ao Firebase Storage
+    testFaceApiAccessToFirebaseStorage();
+
+
+
+
+    
 </script>
 
     
