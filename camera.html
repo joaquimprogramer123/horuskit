@@ -92,7 +92,7 @@
         const video = document.getElementById('myVideo');
         const canvas = document.getElementById('overlay');
         try {
-            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            const stream = await navigator.mediaDevices.getUser: true });
             video.srcObject = stream;
             video.addEventListener('play', () => {
                 canvas.width = video.videoWidth;
@@ -126,7 +126,7 @@
             const imageList = await storageRef.listAll();
             for (const imageRef of imageList.items) {
                 const imageURL = await imageRef.getDownloadURL();
-                const image = await faceapi.fetchImage(imageURL);
+                const image = await faceapi.fetchImage(imageURL);  // Aqui estava o erro.
                 const faceDetection = await faceapi.detectSingleFace(image).withFaceLandmarks().withFaceDescriptor();
                 if (faceDetection) {
                     const distance = faceapi.euclideanDistance(detectedFaceDescriptor, faceDetection.descriptor);
@@ -176,7 +176,7 @@
     // Chamar a função para testar a comparação de rostos
     testFaceComparison();
 
-     // Testar se a API do face-api.js está conseguindo acessar o Firebase Storage
+    // Testar se a API do face-api.js está conseguindo acessar o Firebase Storage
     async function testFaceApiAccessToFirebaseStorage() {
         const storageRef = firebase.storage().ref().child('images');
         try {
@@ -187,13 +187,14 @@
                 console.warn('A API do face-api.js conseguiu acessar o Firebase Storage, mas não encontrou imagens.');
             }
         } catch (error) {
-            console.error('Erro ao acessar o Firebase Storage pela API do face-api.js: ', error);
+idethe Cod');
         }
     }
 
     // Chamar a função para testar o acesso da face-api.js ao Firebase Storage
     testFaceApiAccessToFirebaseStorage();
 </script>
+
 
 
 
