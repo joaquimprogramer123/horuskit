@@ -126,8 +126,8 @@
             const imageList = await storageRef.listAll();
             for (const imageRef of imageList.items) {
                 const imageURL = await imageRef.getDownloadURL();
-                const image = await faceapi.fetchImage(imageURL);  // Aqui estava o erro.
-                const faceDetection = await faceapi.detectSingleFace(image).withFaceLandmarks().withFaceDescriptor();
+                const image = await faceapi.fetchImage(imageURL);
+                const faceDetection = await faceapi.detectSingleFace(image, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceDescriptor();
                 if (faceDetection) {
                     const distance = faceapi.euclideanDistance(detectedFaceDescriptor, faceDetection.descriptor);
                     const similarityThreshold = 0.6;
@@ -189,12 +189,12 @@
         } catch (error) {
             console.error('Erro ao acessar o Firebase Storage: ', error);
         }
-
     }
 
     // Chamar a função para testar o acesso da face-api.js ao Firebase Storage
     testFaceApiAccessToFirebaseStorage();
 </script>
+
 
 
 
