@@ -68,7 +68,7 @@
     
     
 
-   <script type="module">
+  <script type="module">
     // Configuração do projeto Firebase
     const firebaseConfig = {
         apiKey: "AIzaSyAdVrAXk70WCDvw6nveao9SwCAAAbIpsts",
@@ -83,7 +83,7 @@
     firebase.initializeApp(firebaseConfig);
     // Carregar modelos necessários para face-api.js
     async function loadModels() {
-        await faceapi.nets.ssdMobilenetv1.loadFromUri('/models');
+        await faceapi.nets.tinyFaceDetector.loadFromUri('/models');
         await faceapi.nets.faceLandmark68Net.loadFromUri('/models');
         await faceapi.nets.faceRecognitionNet.loadFromUri('/models');
     }
@@ -106,7 +106,7 @@
     }
     // Detectar rostos e compará-los com imagens armazenadas
     async function detectAndCompareFaces(video, canvas) {
-        const options = new faceapi.SsdMobilenetv1Options({ minConfidence: 0.5 });
+        const options = new faceapi.TinyFaceDetectorOptions({ inputSize: 160, scoreThreshold: 0.5 });
         try {
             const detections = await faceapi.detectSingleFace(video, options).withFaceLandmarks().withFaceDescriptor();
             if (detections) {
@@ -186,13 +186,9 @@
             } else {
                 console.warn('A API do face-api.js conseguiu acessar o Firebase Storage, mas não encontrou imagens.');
             }
-        
-        
-        
-        
         } catch (error) {
-        console.error('Erro ao acessar o Firebase Storage: ', error);
-    }
+            console.error('Erro ao acessar o Firebase Storage: ', error);
+        }
 
     }
 
@@ -200,9 +196,6 @@
     testFaceApiAccessToFirebaseStorage();
 </script>
 
-    // Chamar a função para testar o acesso da face-api.js ao Firebase Storage
-    testFaceApiAccessToFirebaseStorage();
-</script>
 
 
 
