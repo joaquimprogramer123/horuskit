@@ -91,6 +91,7 @@
         const video = document.getElementById('myVideo');
         const canvas = document.getElementById('overlay');
         try {
+            const stream = await navigator.mediaDevices.getUser: true });
             const stream = await navigator.mediaDevices.getUserMedia({ video: true });
             video.srcObject = stream;
             video.addEventListener('play', () => {
@@ -186,15 +187,8 @@
         } catch (error) {
 idethe Cod');
         }
-        console.error('Erro ao acessar o Firebase Storage: ', error);
     }
-
-    }
-
     // Chamar a função para testar o acesso da face-api.js ao Firebase Storage
     testFaceApiAccessToFirebaseStorage();
 </script>
 
-    // Chamar a função para testar o acesso da face-api.js ao Firebase Storage
-    testFaceApiAccessToFirebaseStorage();
-</script>
